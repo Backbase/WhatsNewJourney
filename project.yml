@@ -1,0 +1,167 @@
+name: TestApp
+options:
+  bundleIdPrefix: com.backbase
+  deploymentTarget:
+    iOS: 12.0
+targets:
+  WhatsNewJourney:
+    type: framework
+    platform: iOS
+    deploymentTarget:
+      iOS: 12.0
+    info:
+      path: Sources/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+    settings:
+      base:
+        SUPPORTS_MACCATALYST: NO
+        MARKETING_VERSION: 0.0.1
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SWIFTLINT_CONFIG: .swiftlint.yml
+      configs:
+        Debug:
+          OTHER_CFLAGS: $(inherited) -fembed-bitcode-marker
+          BITCODE_GENERATION_MODE: marker
+          CLANG_ENABLE_CODE_COVERAGE: YES
+        Release:
+          OTHER_CFLAGS: $(inherited) -fembed-bitcode
+          BITCODE_GENERATION_MODE: bitcode
+          CLANG_ENABLE_CODE_COVERAGE: NO
+    sources: 
+      - path: Sources
+        excludes: 
+          - Info.plist
+        createIntermediateGroups: true
+      - path: Assets
+        createIntermediateGroups: true
+    scheme:
+      testTargets:
+        - WhatsNewJourneyUnitTests
+        - WhatsNewJourneySnapshotTests
+    preBuildScripts:
+      - name: SwiftLint
+        script: |
+                ${PODS_ROOT}/SwiftLint/swiftlint --config ${SWIFTLINT_CONFIG}
+  WhatsNewJourneyUnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    info:
+      path: Tests/WhatsNewJourney/UnitTests/Info.plist
+    codeSign: false
+    dependencies: 
+      - target: WhatsNewJourney
+        link: true
+    sources: 
+      - path: Tests/WhatsNewJourney/UnitTests
+        excludes: Info.plist
+        createIntermediateGroups: true
+      - path: TestResources
+        createIntermediateGroups: true
+  WhatsNewJourneySnapshotTests:
+    type: bundle.unit-test
+    platform: iOS
+    info:
+      path: Tests/WhatsNewJourney/SnapshotTests/Info.plist
+    codeSign: false
+    dependencies: 
+      - target: WhatsNewJourney
+        link: true
+    sources: 
+      - path: Tests/WhatsNewJourney/SnapshotTests
+        excludes: 
+          - Info.plist
+        createIntermediateGroups: true
+  WhatsNewJourneyUnitTests:
+    type: bundle.unit-test
+    platform: iOS
+    info:
+      path: Tests/WhatsNewJourney/UnitTests/Info.plist
+    codeSign: false
+    dependencies:
+      - target: WhatsNewJourney
+        link: true
+    sources: 
+      - path: Tests/WhatsNewJourney/UnitTests
+        excludes: Info.plist
+        createIntermediateGroups: true
+      - path: TestResources
+        createIntermediateGroups: true
+  WhatsNewJourneyAllTests:
+    type: framework
+    platform: iOS
+    info:
+      path: Tests/WhatsNewJourneyAllTests/Info.plist
+    codeSign: false
+    settings:
+      base:
+        MARKETING_VERSION: 0.0.1
+      configs:
+        Debug:
+          OTHER_CFLAGS: $(inherited) -fembed-bitcode-marker
+          BITCODE_GENERATION_MODE: marker
+          CLANG_ENABLE_CODE_COVERAGE: YES
+        Release:
+          OTHER_CFLAGS: $(inherited) -fembed-bitcode
+          BITCODE_GENERATION_MODE: bitcode
+          CLANG_ENABLE_CODE_COVERAGE: NO
+    dependencies:
+      - target: WhatsNewJourney
+        link: false
+      - target: WhatsNewJourneyUnitTests
+        link: false
+      - target: WhatsNewJourneySnapshotTests
+        link: false
+    scheme:
+      gatherCoverageData: true
+      testTargets:
+        - name: WhatsNewJourneyUnitTests
+          parallelizable: false
+          randomExecutionOrder: true
+        - name: WhatsNewJourneySnapshotTests
+          parallelizable: false
+          randomExecutionOrder: true
+  TestApp:
+    type: application
+    platform: iOS
+    deploymentTarget:
+      iOS: 12.0
+    settings:
+      base:
+        # DEVELOPMENT_TEAM: LMC4CG556D
+        USE_AUTH_JOURNEY: true
+        PRODUCT_BUNDLE_IDENTIFIER: com.backbase.whatsnewjourneyapp
+        MARKETING_VERSION: 0.0.1
+    info:
+      path: WhatsNewJourneyApp/Info.plist
+      properties:
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleName: TestApp
+        UILaunchStoryboardName: LaunchScreen
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSFaceIDUsageDescription: "Allow FaceID as a form of passwordless authentication"
+    sources:
+      - path: WhatsNewJourneyApp
+        excludes: Info.plist
+        createIntermediateGroups: true
+      - path: TestResources
+        createIntermediateGroups: true
+    dependencies:
+      - target: WhatsNewJourney
+    scheme:
+      environmentVariables:
+        - variable: RECORD_BEHAVIOURS
+          value: true
+          isEnabled: false
+        - variable: DataProvider
+          value: local
+          isEnabled: false
+        - variable: USE_LATEST_ENV
+          value: true
+          isEnabled: false
+    preBuildScripts:
+      - name: SwiftLint
+        # Swiftlint is disabled here for now, as the excluded folders are not set up correctly
+        script: |
+          ${PODS_ROOT}/SwiftLint/swiftlint --config .swiftlint.yml
