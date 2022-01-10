@@ -1,0 +1,26 @@
+disabled_rules:
+  - large_tuple
+  - trailing_whitespace
+  - todo
+  - opening_brace
+  - nesting
+included:
+  - Sources
+excluded:
+  - Pods
+  - .build
+line_length: 140
+function_body_length: 50
+file_length:
+  warning: 240
+  error: 250
+identifier_name:
+  allowed_symbols: "_"
+  min_length: 2
+  max_length:
+    warning: 90
+    error: 1000
+  excluded:
+    - id
+    - x
+    - y
