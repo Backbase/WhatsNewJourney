@@ -1,0 +1,15 @@
+name: 'Test Journey'
+on: [push]
+
+jobs:
+  build_job:
+    runs-on: macOS
+    name: 'Test'
+    steps:
+      - name: 'Source code checkout'
+        uses: actions/checkout@v1
+      - name: 'Test Journey'
+        uses: maierj/fastlane-action@v0.10.0
+        with:
+          lane: 'test_journeys'
+          options: '{ "journeys": "WhatsNewJourney"}'
