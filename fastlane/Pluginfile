@@ -1,0 +1,4 @@
+gem 'fastlane-plugin-appcenter'
+gem 'fastlane-plugin-lizard'
+gem 'fastlane-plugin-xcodegen'
+gem 'fastlane-plugin-xcframework', git: 'https://github.com/tthbalazs/xcframework.git'

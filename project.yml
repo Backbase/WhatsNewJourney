@@ -56,8 +56,6 @@ targets:
       - path: Tests/WhatsNewJourney/UnitTests
         excludes: Info.plist
         createIntermediateGroups: true
-      - path: TestResources
-        createIntermediateGroups: true
   WhatsNewJourneySnapshotTests:
     type: bundle.unit-test
     platform: iOS
@@ -84,8 +82,6 @@ targets:
     sources: 
       - path: Tests/WhatsNewJourney/UnitTests
         excludes: Info.plist
-        createIntermediateGroups: true
-      - path: TestResources
         createIntermediateGroups: true
   WhatsNewJourneyAllTests:
     type: framework
@@ -144,8 +140,6 @@ targets:
     sources:
       - path: WhatsNewJourneyApp
         excludes: Info.plist
-        createIntermediateGroups: true
-      - path: TestResources
         createIntermediateGroups: true
     dependencies:
       - target: WhatsNewJourney
