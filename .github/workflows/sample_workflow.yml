@@ -3,7 +3,7 @@ on: [push]
 
 jobs:
   build_job:
-    runs-on: macOS
+    runs-on: macos-11
     name: 'Test'
     steps:
       - name: 'Source code checkout'
