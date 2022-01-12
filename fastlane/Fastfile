@@ -1,0 +1,138 @@
+# frozen_string_literal: true
+
+require File.expand_path('helpers.rb', __dir__)
+
+before_all do |_lane, _options|
+  clear_derived_data
+end
+
+# --- Development
+
+desc 'Set up the development environment'
+lane :setup do
+  setup_jenkins if is_ci?
+  xcodegen
+  pods_update
+end
+
+lane :setup_projects do |options|
+  projects = options[:projects] || ENV['JOURNEYS'] + ENV['APPS']
+  with_env(projects) { setup }
+end
+
+# --- Cocoapod dependencies
+
+desc 'Update cocoapods and repo-art automatically if pod install fails'
+lane :pods_update do
+  error_callback = lambda { |_|
+    pod_repo_art_update
+    cocoapods(repo_update: true)
+  }
+  cocoapods(error_callback: error_callback)
+end
+
+# --- Update versions
+
+desc 'Update versions for multiple journeys'
+lane :update_multiple_versions do |options|
+  version = options[:version]
+  journeys = (options[:journeys] || "").split(',')
+  journeys.each do |journey|
+    update_versions(version, journey)
+  end
+  commit_version_bump_if_needed(version: version)
+end
+
+desc 'Update versions for a single journeys'
+lane :update_versions do |options|
+  version = options[:version]
+  journey = options[:journey]
+  update_versions(version, journey)
+  with_env(journey) do
+    commit_version_bump_if_needed(version: version)
+  end
+end
+
+lane :commit_version_bump_if_needed do |options|
+  version = options[:version]
+
+  # The status command needs to run outside of the faslane folder.
+  repo_status = Dir.chdir('..') { sh("git status --porcelain") }
+  repo_clean = repo_status.empty?
+
+  if repo_clean
+    UI.success('No changes to commit.')
+  else
+    git_commit(
+      path: '.',
+      message: "bump: Version to #{version}"
+    )
+
+    add_git_tag(
+      tag: version,
+      force: true
+    )
+
+    push_to_git_remote(tags: true)
+  end
+end
+
+# --- CI
+
+lane :detect_changed_targets do |options|
+  last_successful_build_commit = options[:last_successful_build_commit]
+  UI.user_error! 'Missing last_successful_build_commit' if last_successful_build_commit.nil?
+
+  changed_files = sh "git diff-tree --no-commit-id --name-only -r HEAD #{last_successful_build_commit}"
+  changed_targets = changed_files.scan(%r{^(?:Common|Journey)\/([^\/]*)}).flatten.uniq.join(',')
+  ENV['TARGETS'] = changed_targets
+  UI.message "Found changes in #{changed_targets}"
+end
+
+# --- API Check
+
+desc 'Add/Update the API Check post build script of multiple targets'
+lane :update_api_check do |options|
+  targets = options[:targets] || ENV['TARGETS']
+
+  with_env(targets) {
+    scheme = ENV["SCAN_SCHEME"]
+    updatePostBuildScript(scheme)
+  }
+end
+
+desc 'Check if the api directory contains any uncommited changes'
+lane :api_check do
+  UI.message "Checking the swiftinterface files ..."
+  api_status = Dir.chdir('..') { sh("git diff api/**/*.swiftinterface") }
+
+  if api_status.empty?
+    UI.success "No uncommited change in the public APIs was detected."
+  else 
+    UI.user_error! "Some uncommited changes in the public APIs was detected.\nDon't forget to commit and push the `api` directory."
+  end
+end
+
+# --- Tests
+
+lane :test_apps do |options|
+  apps = options[:apps] || ENV['APPS']
+  test_targets(targets: apps)
+end
+
+lane :test_journeys do |options|
+  journeys = options[:journeys] || ENV['JOURNEYS']
+  test_targets(targets: journeys)
+end
+
+lane :test_targets do |options|
+  detect_changed_targets(options) if options[:detect_changed_targets]
+  targets = options[:targets] || ENV['TARGETS']
+  with_env(targets) { test }
+end
+
+lane :test do
+  setup
+  scan
+end
+

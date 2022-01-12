@@ -1,0 +1,52 @@
+name: 'Test Journey'
+on: [push]
+
+jobs:
+  build_job:
+    runs-on: macos-11
+    name: 'Test'
+    steps:
+      - name: Setup 
+        uses: extractions/netrc@v1
+        with:
+          machine: repo.backbase.com
+          username: ${{ secrets.ARTIFACTS_USER }}
+          password: ${{ secrets.ARTIFACTS_PWD }}
+      - name: Install cocoapods-art
+        run: |
+          gem install cocoapods-art
+
+          # Setup Cocoapods repositories
+          REPOS_ART_PATH="$HOME/.cocoapods/repos-art"
+        shell: bash
+      - name: Install dependencies
+        run: |
+          if [ -z ${BB_COCOAPODS_REPOS} ];
+          then export BB_COCOAPODS_REPOS="bbartifacts3:ios3;bbartifacts-identity:ios-identity;bbartifacts-retail3:ios-retail3";
+          fi
+
+          ## Split environment variable string using the semi-colon separator into an array of dependencies
+          IFS=';' read -ra repos <<< "$BB_COCOAPODS_REPOS"
+
+          for definition in "${repos[@]}"; do 
+          NAME="${definition%%:*}"
+          REPO="${definition##*:}"
+          if [ ! -d "$REPOS_ART_PATH/$NAME" ]; then
+              pod repo-art add $NAME https://repo.backbase.com/api/pods/$REPO
+          else
+              pod repo-art update $NAME
+          fi
+          done
+
+          # Gem cache path
+          #RBENV_DIR="`cd $(rbenv which ruby)/../..;pwd`"
+          #echo "Gem cache directory: $RBENV_DIR"
+          #envman add --key GEM_CACHE_PATH --value $RBENV_DIR
+        shell: bash
+      - name: 'Source code checkout'
+        uses: actions/checkout@v1
+      - name: 'Test Journey'
+        uses: maierj/fastlane-action@v0.10.0
+        with:
+          lane: 'test_journeys'
+          options: '{ "journeys": "WhatsNewJourney"}'

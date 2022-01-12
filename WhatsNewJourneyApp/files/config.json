@@ -1,0 +1,22 @@
+{
+    "backbase": {
+        "serverURL": "",
+        "localModelPath": "$(contextRoot)/localModel.json",
+        "experience": "",
+        "version": "6.1.5",
+        "identity": {
+            "baseURL": "",
+            "realm": "",
+            "clientId": "",
+            "applicationKey": ""
+        }
+    },
+    "security": {
+        "allowedDomains": [
+            "*"
+        ]
+    },
+    "development": {
+        "debugEnable": true
+    }
+}
