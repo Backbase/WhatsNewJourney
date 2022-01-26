@@ -5,7 +5,6 @@ project 'TestApp.xcodeproj'
 plugin 'cocoapods-art', sources: %w[
   bbartifacts3
   bbartifacts-retail3
-  bbartifacts-identity
 ]
 
 install! 'cocoapods', 

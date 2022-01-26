@@ -5,6 +5,8 @@ This repository contains the components and documentation of the iOS Version of 
 ## Description
 A “What’s New” journey lets you welcome new users and reconnect with returning ones. An optional “What’s new” experience that’s fast, fun, and educational can help people get the most from your app without getting in their way.
 
+![WhatsNewJourneyExample](./Documents/whatsNewJourneyExample.gif)
+
 
 ## Objective
 Create a remotely customizable “What’s New” experience.
@@ -65,8 +67,7 @@ bundle install
 ```sh
 bundle exec pod repo-art add bbartifacts3 https://repo.backbase.com/api/pods/ios3
 bundle exec pod repo-art add bbartifacts-retail3 https://repo.backbase.com/api/pods/ios-retail3
-bundle exec pod repo-art add bbartifacts-notifications https://repo.backbase.com/api/pods/ios-mobile-notifications
-bundle exec pod repo-art add bbartifacts-identity https://repo.backbase.com/api/pods/ios-identity
+
 ```
 
 #### 6. Update artifactory repositories
@@ -74,8 +75,6 @@ bundle exec pod repo-art add bbartifacts-identity https://repo.backbase.com/api/
 ```sh
 bundle exec pod repo-art update bbartifacts3
 bundle exec pod repo-art update bbartifacts-retail3
-bundle exec pod repo-art add bbartifacts-notifications
-bundle exec pod repo-art add bbartifacts-identity
 ```
 
 > Having a hard time with Ruby? see [troubleshooting](#troubleshooting).
