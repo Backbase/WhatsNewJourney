@@ -5,6 +5,8 @@ This repository contains the components and documentation of the iOS Version of 
 ## Description
 A “What’s New” journey lets you welcome new users and reconnect with returning ones. An optional “What’s new” experience that’s fast, fun, and educational can help people get the most from your app without getting in their way.
 
+![WhatsNewJourneyExample](./Documents/whatsNewJourneyExample.gif)
+
 
 ## Objective
 Create a remotely customizable “What’s New” experience.
