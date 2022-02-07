@@ -30,6 +30,7 @@ abstract_target 'Common' do
   pod 'RetailJourneyCommon', '~> 1.0'
 
   target 'TestApp' do
+    pod 'BackbaseRemoteConfig'
   end
 
   target 'WhatsNewJourney' do
