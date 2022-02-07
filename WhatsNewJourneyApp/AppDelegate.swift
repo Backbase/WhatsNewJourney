@@ -8,6 +8,7 @@
 import UIKit
 import WhatsNewJourney
 import Backbase
+import RemoteConfig
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,7 +18,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         initializeBackbase()
         // Override point for customization after application launch.
         window = UIWindow()
-        window?.rootViewController = WhatsNewViewController()
+        window?.rootViewController = WhatsNewViewController(remoteConfigClient: initializeRemoteConfig())
         window?.makeKeyAndVisible()
                 
         return true
@@ -30,6 +31,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             fatalError("Backbase MSDK initialization failed: \(error.localizedDescription)")
         }
     }
+    
+    private func initializeRemoteConfig() -> RemoteConfig {
+           let r = RemoteConfig.init(serviceUrl: "", projectName: "")
+           // Fetch and activate configuration
+           r.fetchAndActivate(completion: { status in
+               if status {
+                   print("Configuration successfully fetched")
+               } else {
+                   print("Configuration wasn't successfully fetched")
+               }
+           })
+           return r
+       }
     
 }
 

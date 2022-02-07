@@ -10,12 +10,21 @@ import WhatsNewJourney
 import Resolver
 import SnapKit
 import BackbaseDesignSystem
+import RemoteConfig
 
 class WhatsNewViewController: UIViewController {
     
-    let decoder = JSONDecoder()
-    
     var dataProvider: TopicsUseCase?
+    var r: RemoteConfig
+    
+    init(remoteConfigClient: RemoteConfig) {
+        self.r = remoteConfigClient
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,25 +32,34 @@ class WhatsNewViewController: UIViewController {
         
         let appConfig = WhatsNew.Configuration()
         
-        self.dataProvider = ContentServicesDataProvider(fileName: "testTopics.json")
-        
-        Resolver.register { appConfig as WhatsNew.Configuration }
-        
+        let safeArea = view.safeAreaLayoutGuide
         view.addSubview(startJourneyButton)
         view.backgroundColor = .white
         startJourneyButton.addTarget(self, action: #selector(startJourney), for: .touchUpInside)
-        
-        let safeArea = view.safeAreaLayoutGuide
         
         startJourneyButton.snp.makeConstraints { make in
             make.leading.equalTo(safeArea.snp.leading).inset(DesignSystem.shared.spacer.lg)
             make.trailing.equalTo(safeArea.snp.trailing).inset(DesignSystem.shared.spacer.lg)
             make.bottom.equalTo(safeArea.snp.bottom).inset(DesignSystem.shared.spacer.lg)
         }
+        
+        Resolver.register { appConfig as WhatsNew.Configuration }
     }
     
     
     @IBAction func startJourney(_ sender: Any) {
+        
+        // Use the RemoteConfigClient to fetch the name of the datasource
+        if let contentSource = DataProvider(rawValue: r.getString(name: "contentSource") ?? "") {
+            switch contentSource {
+            case .contentServicesDataProvider:
+                self.dataProvider = ContentServicesDataProvider(fileName: "testTopics.json")
+            case .remoteConfigDataProvider:
+                self.dataProvider = RemoteConfigDataProvider(client: r)
+            default:
+                self.dataProvider = LocalDataProvider(fileName: "topics")
+            }
+        }
         
         dataProvider?.retrieveTopics {[weak self] result in
             switch result {

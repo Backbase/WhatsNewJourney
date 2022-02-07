@@ -1,6 +1,8 @@
 PODS:
   - Backbase (8.5.0)
   - BackbaseDesignSystem (1.19.0)
+  - BackbaseRemoteConfig (1.2.1):
+    - Backbase (>= 6.11.0)
   - Differentiator (4.0.1)
   - Nimble (9.2.1)
   - Quick (3.1.2)
@@ -51,6 +53,7 @@ PODS:
 DEPENDENCIES:
   - Backbase (~> 8.0)
   - BackbaseDesignSystem (~> 1.5)
+  - BackbaseRemoteConfig
   - Quick (~> 3.0)
   - Resolver (= 1.2.1)
   - RetailDesign (~> 1.0)
@@ -70,7 +73,7 @@ SPEC REPOS:
     - RetailDesign
     - RetailJourneyCommon
   https://repo.backbase.com/api/pods/ios3:
-    - Backbase
+    - BackbaseRemoteConfig
   trunk:
     - Differentiator
     - Nimble
@@ -91,6 +94,7 @@ SPEC REPOS:
 SPEC CHECKSUMS:
   Backbase: b62a01299e58052d11607883113ecf3275f4c290
   BackbaseDesignSystem: 7d006db4b87d0f217776cd82b561321ec200411f
+  BackbaseRemoteConfig: 23b0e70a4bbef0fc79ad64d47e1194235a6b8e9f
   Differentiator: 886080237d9f87f322641dedbc5be257061b0602
   Nimble: e7e615c0335ee4bf5b0d786685451e62746117d5
   Quick: 60f0ea3b8e0cfc0df3259a5c06a238ad8b3c46e0
@@ -109,6 +113,6 @@ SPEC CHECKSUMS:
   SnapshotTesting: 6141c48b6aa76ead61431ca665c14ab9a066c53b
   SwiftLint: 06ac37e4d38c7068e0935bb30cda95f093bec761
 
-PODFILE CHECKSUM: 215ea0de24fac381037df9ecdad700cc0935b93e
+PODFILE CHECKSUM: 834064306654f162ba5073074f738f2a41a6ad1a
 
 COCOAPODS: 1.10.0
